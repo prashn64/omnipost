@@ -1,23 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>jQuery UI Omnipost</title>
-    <style type="text/css" filename="ui.omnipost.css">
-    body{width:576px;margin-left:auto;margin-right:auto;padding-top:10px;}
-    .ui-omniPost{width:500px;}
-    .ui-omniPostActive{color:#a1a1a1;font-style:italic;}
-    #ui-omniPostSubmit{margin-left:auto;}
-    #ui-omniPostText:focus{outline:none;}
-    #ui-omniPostCollapse{height:16px;position:relative;float:right;top:21px;}
-    </style>
-  </head>
-  <body>
-    <div id='myPostBox' title='Your response here...'></div>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
-    <script type="text/javascript" src="https://raw.github.com/padolsey/jQuery.fn.autoResize/master/jquery.autoresize.js"></script>
-    <script type="text/javascript" src="coffee-script.js"></script>
-    <script type="text/coffeescript" filename="jquery.ui.omnipost.coffee">
+
     (($) ->
       $.widget "ui.omnipost",
 
@@ -57,11 +38,4 @@
           $.Widget::_setOption.apply(this, arguments)
 
     ) jQuery
-    </script>
-    <script type="text/coffeescript">
-    (($) ->
-      $('#myPostBox').omnipost()
-    ) jQuery
-    </script>
-  </body>
-</html>
+    
