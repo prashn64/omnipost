@@ -19,11 +19,11 @@
           text.height(50) if text.height() < 50
         text.removeClass('ui-omniPostActive')
         if text.val() is @element.attr('title')
-          text.text('')
+          text.val('')
       )
       collapse.click( =>          
         post.hide()
-        text.text(@element.attr('title'))
+        text.val(@element.attr('title'))
         text.addClass('ui-omniPostActive')
         text.height(28)
         collapse.hide()
