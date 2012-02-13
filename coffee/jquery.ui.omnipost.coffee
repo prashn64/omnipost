@@ -2,26 +2,38 @@
   $.widget "ui.omnipost",
   
     _create: ->
-      @element.autoResize()
+      collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
+      collapse.attr('src', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg')
+      text = $("<textarea id='ui-omniPostText'></textarea>")
+      text.autoResize(extraSpace: 50).addClass('ui-omniPost')     
+      @element.append(collapse)
+      @element.append(text)
+      @element.append($('<br/>'))
+      post = $("<button id='ui-omniPostSubmit'>Post</button>")
+      @element.append(post)
       @element.addClass('ui-omniPost')
-      @element.after($('<button>Submit</button>'))
       @element.focusin( =>
-        unless @element.attr('readonly')?
-          @element.next().show()
-        @element.removeClass('ui-omniPostActive')
-        if @element.val() is @element.attr('title')
-          @element.text('')
-      ).focusout( =>
-        if @element.val() is ''
-          @element.next().hide()
-          @element.text(@element.attr('title'))
-          @element.addClass('ui-omniPostActive')
-      ).focusout()
+        unless text.attr('readonly')
+          post.show()
+          collapse.show()
+          text.height(50) if text.height() < 50
+        text.removeClass('ui-omniPostActive')
+        if text.val() is @element.attr('title')
+          text.text('')
+      )
+      collapse.click( =>          
+        post.hide()
+        text.text(@element.attr('title'))
+        text.addClass('ui-omniPostActive')
+        text.height(28)
+        collapse.hide()
+      ).click()
+      @element.focusout( => collapse.click() if text.val() is '')
 
     destroy: ->
-      @element.next().remove()
+      @element.remove()
 
     _setOption: (option, value) ->
-      $.Widget::_setOption.apply this, arguments
+      $.Widget::_setOption.apply(this, arguments)
 
 ) jQuery

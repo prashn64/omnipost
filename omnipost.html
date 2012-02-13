@@ -1,20 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>jQuery UI Omnipost</title>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jQuery UI Omnipost</title>
         <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.7.2.custom.css">
         <link rel="stylesheet" type="text/css" href="css/ui.omnipost.css">
-	</head>
-	<body width='576'>
-    	<textarea id='myPostBox' title='Your response here...'></textarea>
-    	<script type="text/javascript" src="js/jquery.js"></script>
-        <script type="text/javascript" src="js/jquery.ui.core.js"></script>
-        <script type="text/javascript" src="js/jquery.ui.widget.js"></script>
-        <script type="text/javascript" src="js/jquery.autoresize.js"></script>
-        <script type="text/javascript" src="js/jquery.ui.omnipost.js"></script>
-        <script type="text/javascript">
-			$("#myPostBox").omnipost();
-		</script>
-	</body>
+  </head>
+  <body>
+      <div id='myPostBox' title='Your response here...'></div>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+      <script type="text/javascript" src="https://raw.github.com/padolsey/jQuery.fn.autoResize/master/jquery.autoresize.js"></script>
+      <script type="text/javascript" src="js/jquery.ui.omnipost.js"></script>
+      <script type="text/javascript">
+      $("#myPostBox").omnipost();
+      </script>
+  </body>
 </html>

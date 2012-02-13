@@ -1,3 +1,10 @@
+body {
+  width: 576px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 10px;
+}
+
 .ui-omniPost {
   width: 500px;
 }
@@ -6,3 +13,19 @@
   color: #a1a1a1; 
   font-style: italic;
 }
+
+#ui-omniPostSubmit {
+  margin-left: auto;
+}
+
+#ui-omniPostText:focus {
+  outline: none;
+}
+
+#ui-omniPostCollapse {
+  height: 16px;
+  position: relative;
+  float: right;
+  top: 21px;
+}
+​
