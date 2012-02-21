@@ -8,6 +8,21 @@ the box they use to let you post all different types of stuff in one fancy conta
 The goal of this project is to create an open source, extensible multi-media post box
 that can be dropped in to any website.
 
+### Blueprint
+
+#### The Edit Box
+
+The edit box is the first thing you see when you load the omnipost plugin. It is a magical
+auto expanding text area that the whole omnipost plugin is built around.
+
+#### Attachment Panels (planned)
+
+The attachment pannels allow you to show closable panels containing special edit controls when the user clicks on the small icon in the corner of the edit box. The icon, panel view, and functionallity are all customizable by the user. Some default attachment panels are also planned, such as an image panel and a link panel.
+
+#### Edit box parser (planned)
+
+The edit box parser allows the user to assign callback functions to regular expressions. This is handy for doing things like '@' reply detection.
+
 ### Contributing
 
 1. [Fork](https://github.com/Socrenchus/omnipost/fork_select) on github.
