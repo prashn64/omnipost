@@ -1,5 +1,4 @@
-
-    (($) ->
+ (($) ->
       $.widget "ui.omnipost",
 
         _create: ->
@@ -38,4 +37,5 @@
           $.Widget::_setOption.apply(this, arguments)
 
     ) jQuery
-    
+	
+$('#myPostBox').omnipost()
