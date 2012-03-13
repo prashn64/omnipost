@@ -71,7 +71,6 @@
 			linkBox.hide()
 			selectedImageLink.hide()
 		  ).click()
-		  
 		  @element.focusout( => collapse.click() if text.val() is '' and not linkBox.visible())
 		  
 		  link.click( =>
@@ -83,6 +82,7 @@
 
 		_setOption: (option, value) ->
 		  $.Widget::_setOption.apply(this, arguments)
+
 	) jQuery
     </script>
     <script type="text/coffeescript">
