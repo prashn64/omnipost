@@ -9,13 +9,20 @@
       @init()
         
     init: =>
-      @panelcontainer = $("<div id=#{@id}></div>")
-      @linkBox = $("<textarea id='ui-omniPostLink'></textarea>")
-      @linkBox.height(25)
-      @linkBox.width(500)
-      @linkIcon = $("<img src = #{@iconSrc} alt = 'attach'>")
-      @panelcontainer.append(@linkBox)
-      
+      @panelcontainer = $("<div class=#{@id}></div>")
+      @linkbox = $("<textarea class='ui-omniPostLink'></textarea>")
+      @linkIcon = $("<img class = 'ui-panelicon' src = #{@iconSrc} alt = 'attach'>")       
+      @collapseIcon = $("<img class = 'ui-panelcollapseicon' src = #{@collapseSrc} alt = 'collapse'>")
+      @submitLink = $("<button class='ui-submitLink'>Add</button>")
+      @panelcontainer.append(@linkIcon)
+      @panelcontainer.append(@linkbox)
+      @panelcontainer.append(@submitLink)      
+      @panelcontainer.append(@collapseIcon)
+    
+      @collapseIcon.click( =>
+        @hide()
+      )
+
     addPanelToContainer: (container) =>
       container.append(@panelcontainer)
              
@@ -23,18 +30,38 @@
       @panelcontainer.show()
                       
     hide: =>
+      @linkbox.val('')
+      @linktosite.text('')
       @panelcontainer.hide()
 
   class LinkPanel extends Panel   
     init: ->
       super.init()
-      attachedImage = $("<img src = '' alt = 'attach'>")
-      @panelcontainer.append(attachedImage) 
-      
-      @linkBox.change( =>
-        attachedImage.attr('src', @linkBox.val())
+      @attachedImage = $("<img src = '' alt = 'attach'>")
+      @linktosite = $("<a href = #{@linkbox.val()} class = 'ui-linkToSite'></a>")
+      @panelcontainer.append(@attachedImage)
+      @panelcontainer.append(@linktosite)
+      @linkbox.change( =>
+        @attachedImage.show()
+        @linktosite.text('')
+        @attachedImage.attr('src', @linkbox.val())
       )
-
+      
+      $(document).ready( =>
+        @attachedImage.error( =>  
+          @attachedImage.hide()
+          unless @attachedImage.attr('src') is ''
+            @linktosite.attr('href', @linkbox.val())
+            @linktosite.text(@linkbox.val())            
+            unless @linktosite.text().indexOf("http://") is 0 
+              @linktosite.attr('href', 'http://' + @linktosite.attr('href'))
+        )
+      )
+    
+    hide: =>
+      super.hide()
+      @attachedImage.attr('src', '')
+      
   class Plugin
     constructor: (@element, options) ->
       @options = $.extend {}, defaults, options
@@ -43,16 +70,13 @@
       @init()
     
     init: ->
-      linkPanel = new LinkPanel('ui-linkBox', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg')
+      linkPanel = new LinkPanel('ui-linkbox', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
       collapse.attr('src', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg')
       link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
       link.attr('src', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png')
       text = $("<textarea id='ui-omniPostText'></textarea>")
-      text.autoResize(extraSpace: 50).addClass('ui-omniPost')     
-      # linkBox = $("<textarea id='ui-omniPostLink'></textarea>")
-      # linkBox.height(25)
-      # linkBox.width(500)
+      text.autoResize(extraSpace: 50).addClass('ui-omniPost')
       selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>")  
       selectedImageLink.hide()
       $(@element).append(collapse)
@@ -76,23 +100,16 @@
           text.val('')
       )
 	  
-      # linkBox.change( =>   
-      #  selectedImageLink.show() 
-      #  selectedImageLink.attr('src', linkBox.val())           
-      # )
-	  
       collapse.click( =>          
-        # post.hide()
-        # text.val($(@element).attr('title'))
-        # text.addClass('ui-omniPostActive')
-        # text.height(28)
-        # collapse.hide()
-        # link.hide()
-        # linkBox.val('')
-        # linkPanel.hide()
-        # selectedImageLink.hide()
+        post.hide()
+        text.val($(@element).attr('title'))
+        text.addClass('ui-omniPostActive')
+        text.height(28)
+        collapse.hide()
+        link.hide()
+        linkPanel.hide()
       ).click()
-      $(@element).focusout( => collapse.click() if text.val() is '')
+      # $(@element).focusout( => collapse.click() if text.val() is '')
       
       link.click( =>
         linkPanel.show()

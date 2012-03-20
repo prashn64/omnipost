@@ -1,0 +1,23 @@
+.ui-linkbox {
+    width: 500px;
+    border: 1px solid black;
+}
+
+.ui-omniPostLink {
+    width: 300px;
+    height: 20px;
+    margin: 10px;
+}
+.ui-panelicon {
+    height: 16px;
+    margin: 5px;
+}
+
+.ui-panelcollapseicon {
+    height: 16px;
+    margin: 5px;
+}
+
+.ui-submitLink {
+    margin: 10px;
+}
