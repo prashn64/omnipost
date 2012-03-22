@@ -15,6 +15,8 @@
         this.id = id;
         this.iconSrc = iconSrc;
         this.collapseSrc = collapseSrc;
+        this.remove = __bind(this.remove, this);
+        this.isEmpty = __bind(this.isEmpty, this);
         this.hide = __bind(this.hide, this);
         this.show = __bind(this.show, this);
         this.addPanelToContainer = __bind(this.addPanelToContainer, this);
@@ -52,6 +54,14 @@
         return this.panelcontainer.hide();
       };
 
+      Panel.prototype.isEmpty = function() {
+        return this.linkbox.val() === '';
+      };
+
+      Panel.prototype.remove = function() {
+        return this.panelcontainer.remove();
+      };
+
       return Panel;
 
     })();
@@ -60,6 +70,7 @@
       __extends(LinkPanel, _super);
 
       function LinkPanel() {
+        this.content = __bind(this.content, this);
         this.hide = __bind(this.hide, this);
         LinkPanel.__super__.constructor.apply(this, arguments);
       }
@@ -67,11 +78,13 @@
       LinkPanel.prototype.init = function() {
         var _this = this;
         LinkPanel.__super__.init.apply(this, arguments).init();
+        this.displayedContent = 'none';
         this.attachedImage = $("<img src = '' alt = 'attach'>");
         this.linktosite = $("<a href = " + (this.linkbox.val()) + " class = 'ui-linkToSite'></a>");
         this.panelcontainer.append(this.attachedImage);
         this.panelcontainer.append(this.linktosite);
         this.linkbox.change(function() {
+          _this.displayedContent = 'image';
           _this.attachedImage.show();
           _this.linktosite.text('');
           return _this.attachedImage.attr('src', _this.linkbox.val());
@@ -80,6 +93,7 @@
           return _this.attachedImage.error(function() {
             _this.attachedImage.hide();
             if (_this.attachedImage.attr('src') !== '') {
+              _this.displayedContent = 'link';
               _this.linktosite.attr('href', _this.linkbox.val());
               _this.linktosite.text(_this.linkbox.val());
               if (_this.linktosite.text().indexOf("http://") !== 0) {
@@ -95,6 +109,16 @@
         return this.attachedImage.attr('src', '');
       };
 
+      LinkPanel.prototype.content = function() {
+        if (this.displayedContent === 'image') {
+          return this.attachedImage;
+        } else if (this.displayedContent === 'link') {
+          return this.linktosite;
+        } else {
+          return null;
+        }
+      };
+
       return LinkPanel;
 
     })(Panel);
@@ -102,6 +126,7 @@
 
       function Plugin(element, options) {
         this.element = element;
+        this.createcompletepost = __bind(this.createcompletepost, this);
         this.options = $.extend({}, defaults, options);
         this._defaults = defaults;
         this._name = 'tagbox';
@@ -139,8 +164,7 @@
             link.show();
             if (text.height() < 50) text.height(50);
           }
-          text.removeClass('ui-omniPostActive');
-          if (text.val() === $(_this.element).attr('title')) return text.val('');
+          return text.removeClass('ui-omniPostActive');
         });
         collapse.click(function() {
           post.hide();
@@ -151,9 +175,29 @@
           link.hide();
           return linkPanel.hide();
         }).click();
-        return link.click(function() {
+        link.click(function() {
           return linkPanel.show();
         });
+        return post.click(function() {
+          var linkedcontent, textcontent;
+          if (text.val() !== '' || !linkPanel.isEmpty()) {
+            post.remove();
+            textcontent = text.val();
+            text.remove();
+            linkedcontent = linkPanel.content();
+            linkPanel.remove();
+            collapse.remove();
+            link.remove();
+            return _this.createcompletepost(textcontent, linkedcontent);
+          }
+        });
+      };
+
+      Plugin.prototype.createcompletepost = function(postcontent, linkedcontent) {
+        var posttext;
+        posttext = $("<p class = 'posttext'>" + postcontent + "</p>");
+        if (linkedcontent !== null) $(this.element).append(linkedcontent);
+        if (postcontent !== '') return $(this.element).append(posttext);
       };
 
       Plugin.prototype.destroy = function() {

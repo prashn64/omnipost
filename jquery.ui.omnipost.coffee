@@ -34,14 +34,22 @@
       @linktosite.text('')
       @panelcontainer.hide()
 
+    isEmpty: =>
+      return @linkbox.val() is ''
+  
+    remove: =>
+       @panelcontainer.remove()
+
   class LinkPanel extends Panel   
     init: ->
       super.init()
+      @displayedContent = 'none'
       @attachedImage = $("<img src = '' alt = 'attach'>")
       @linktosite = $("<a href = #{@linkbox.val()} class = 'ui-linkToSite'></a>")
       @panelcontainer.append(@attachedImage)
       @panelcontainer.append(@linktosite)
       @linkbox.change( =>
+        @displayedContent = 'image'
         @attachedImage.show()
         @linktosite.text('')
         @attachedImage.attr('src', @linkbox.val())
@@ -51,6 +59,7 @@
         @attachedImage.error( =>  
           @attachedImage.hide()
           unless @attachedImage.attr('src') is ''
+            @displayedContent = 'link'
             @linktosite.attr('href', @linkbox.val())
             @linktosite.text(@linkbox.val())            
             unless @linktosite.text().indexOf("http://") is 0 
@@ -61,7 +70,15 @@
     hide: =>
       super.hide()
       @attachedImage.attr('src', '')
-      
+
+    content: =>
+      if @displayedContent is 'image'
+        return @attachedImage
+      else if @displayedContent is 'link'
+        return @linktosite
+      else
+        return null
+ 
   class Plugin
     constructor: (@element, options) ->
       @options = $.extend {}, defaults, options
@@ -96,10 +113,10 @@
           link.show()
           text.height(50) if text.height() < 50
         text.removeClass('ui-omniPostActive')
-        if text.val() is $(@element).attr('title')
-          text.val('')
+        # if text.val() is $(@element).attr('title')
+        #  text.val('')
       )
-	  
+      
       collapse.click( =>          
         post.hide()
         text.val($(@element).attr('title'))
@@ -114,7 +131,26 @@
       link.click( =>
         linkPanel.show()
       )
-                
+      
+      post.click( =>
+        if text.val() != '' or !linkPanel.isEmpty() 
+          post.remove()
+          textcontent = text.val()
+          text.remove()
+          linkedcontent = linkPanel.content()
+          linkPanel.remove()
+          collapse.remove()
+          link.remove()
+          @createcompletepost(textcontent, linkedcontent)
+      )          
+    
+    createcompletepost: (postcontent, linkedcontent) =>
+        posttext = $("<p class = 'posttext'>#{postcontent}</p>")
+        unless linkedcontent is null
+          $(@element).append(linkedcontent)
+        unless postcontent is ''         
+          $(@element).append(posttext)
+
     destroy: ->
       $(@element).remove()
     
