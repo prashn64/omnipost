@@ -7,7 +7,9 @@
     var LinkPanel, Panel, Plugin, defaults, pluginName;
     pluginName = 'omnipost';
     defaults = {
-      property: 'value'
+      editing: true,
+      postcontent: '',
+      linkedcontent: ''
     };
     Panel = (function() {
 
@@ -33,8 +35,8 @@
         this.submitLink = $("<button class='ui-submitLink'>Add</button>");
         this.panelcontainer.append(this.linkIcon);
         this.panelcontainer.append(this.linkbox);
-        this.panelcontainer.append(this.submitLink);
         this.panelcontainer.append(this.collapseIcon);
+        this.panelcontainer.append(this.submitLink);
         return this.collapseIcon.click(function() {
           return _this.hide();
         });
@@ -77,12 +79,14 @@
 
       LinkPanel.prototype.init = function() {
         var _this = this;
+        this.maxwidth = 300;
         LinkPanel.__super__.init.apply(this, arguments).init();
         this.displayedContent = 'none';
-        this.attachedImage = $("<img src = '' alt = 'attach'>");
+        this.attachedImage = $("<img width = '" + this.maxwidth + "' height = 'auto' class = 'ui-attachedImage' src = '' alt = 'attach'>");
         this.linktosite = $("<a href = " + (this.linkbox.val()) + " class = 'ui-linkToSite'></a>");
         this.panelcontainer.append(this.attachedImage);
         this.panelcontainer.append(this.linktosite);
+        this.attachedImage.hide();
         this.linkbox.change(function() {
           _this.displayedContent = 'image';
           _this.attachedImage.show();
@@ -134,70 +138,94 @@
       }
 
       Plugin.prototype.init = function() {
-        var collapse, link, linkPanel, post, selectedImageLink, text,
+        var collapse, link, linkPanel, omnicontainer, post, selectedImageLink, text,
           _this = this;
-        linkPanel = new LinkPanel('ui-linkbox', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg');
-        collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>");
-        collapse.attr('src', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg');
-        link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>");
-        link.attr('src', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png');
-        text = $("<textarea id='ui-omniPostText'></textarea>");
-        text.autoResize({
-          extraSpace: 50
-        }).addClass('ui-omniPost');
-        selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>");
-        selectedImageLink.hide();
-        $(this.element).append(collapse);
-        $(this.element).append(link);
-        $(this.element).append(text);
-        linkPanel.addPanelToContainer($(this.element));
-        linkPanel.hide();
-        $(this.element).append(selectedImageLink);
-        $(this.element).append($('<br/>'));
-        post = $("<button id='ui-omniPostSubmit'>Post</button>");
-        $(this.element).append(post);
-        $(this.element).addClass('ui-omniPost');
-        $(this.element).focusin(function() {
-          if (!text.attr('readonly')) {
-            post.show();
-            collapse.show();
-            link.show();
-            if (text.height() < 50) text.height(50);
-          }
-          return text.removeClass('ui-omniPostActive');
-        });
-        collapse.click(function() {
-          post.hide();
-          text.val($(_this.element).attr('title'));
-          text.addClass('ui-omniPostActive');
-          text.height(28);
-          collapse.hide();
-          link.hide();
-          return linkPanel.hide();
-        }).click();
-        link.click(function() {
-          return linkPanel.show();
-        });
-        return post.click(function() {
-          var linkedcontent, textcontent;
-          if (text.val() !== '' || !linkPanel.isEmpty()) {
-            post.remove();
-            textcontent = text.val();
-            text.remove();
-            linkedcontent = linkPanel.content();
-            linkPanel.remove();
-            collapse.remove();
-            link.remove();
-            return _this.createcompletepost(textcontent, linkedcontent);
-          }
-        });
+        if (this.options.editing) {
+          linkPanel = new LinkPanel('ui-linkbox', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg');
+          collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>");
+          collapse.attr('src', 'http://officeimg.vo.msecnd.net/en-us/images/MB900432537.jpg');
+          link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>");
+          link.attr('src', 'http://b.dryicons.com/images/icon_sets/coquette_part_2_icons_set/png/128x128/attachment.png');
+          omnicontainer = $("<div id='ui-omniContainer'></div>");
+          text = $("<textarea id='ui-omniPostText'></textarea>");
+          text.autoResize({
+            extraSpace: 50
+          }).addClass('ui-omniPost');
+          selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>");
+          selectedImageLink.hide();
+          omnicontainer.append(text);
+          omnicontainer.append(collapse);
+          omnicontainer.append(link);
+          $(this.element).append(omnicontainer);
+          linkPanel.addPanelToContainer($(this.element));
+          linkPanel.hide();
+          $(this.element).append(selectedImageLink);
+          $(this.element).append($('<br/>'));
+          post = $("<button id='ui-omniPostSubmit'>Post</button>");
+          $(this.element).append(post);
+          $(this.element).addClass('ui-omniPost');
+          $(this.element).focusin(function() {
+            if (!text.attr('readonly')) {
+              post.show();
+              collapse.show();
+              link.show();
+              if (text.height() < 50) text.height(50);
+            }
+            text.removeClass('ui-omniPostActive');
+            if (text.val() === $(_this.element).attr('title')) return text.val('');
+          });
+          collapse.click(function() {
+            post.hide();
+            text.val($(_this.element).attr('title'));
+            text.addClass('ui-omniPostActive');
+            text.height(28);
+            collapse.hide();
+            link.hide();
+            return linkPanel.hide();
+          }).click();
+          link.click(function() {
+            return linkPanel.show();
+          });
+          return post.click(function() {
+            var linkedcontent, textcontent;
+            if (text.val() !== '' || !linkPanel.isEmpty()) {
+              post.remove();
+              textcontent = text.val();
+              text.remove();
+              linkedcontent = linkPanel.content();
+              linkPanel.remove();
+              collapse.remove();
+              link.remove();
+              return _this.createcompletepost(textcontent, linkedcontent);
+            }
+          });
+        } else {
+          return this.createcompletepost(this.options.postcontent, this.options.linkedcontent);
+        }
       };
 
       Plugin.prototype.createcompletepost = function(postcontent, linkedcontent) {
-        var posttext;
+        var linkedelement, posttext,
+          _this = this;
         posttext = $("<p class = 'posttext'>" + postcontent + "</p>");
-        if (linkedcontent !== null) $(this.element).append(linkedcontent);
-        if (postcontent !== '') return $(this.element).append(posttext);
+        linkedelement = $("<img src = " + linkedcontent + " alt = 'linked content' />");
+        $(document).ready(function() {
+          return linkedelement.error(function() {
+            var linkedcontentpreview;
+            linkedelement.remove();
+            linkedelement = $("<a href = " + linkedcontent + ">" + linkedcontent + "</a>");
+            if (linkedcontent.indexOf("http://") !== 0) {
+              linkedelement.attr('href', 'http://' + linkedelement.attr('href'));
+            }
+            linkedcontentpreview = $("<iframe id='frame' src=" + (linkedelement.attr('href')) + " scrolling = no></iframe>");
+            _this.omnifinaldiv.prepend(linkedelement);
+            return _this.omnifinaldiv.prepend(linkedcontentpreview);
+          });
+        });
+        this.omnifinaldiv = $("<div id = 'ui-postedcontent'></div>");
+        if (linkedcontent !== null) this.omnifinaldiv.append(linkedelement);
+        if (postcontent !== '') this.omnifinaldiv.append(posttext);
+        return $(this.element).append(this.omnifinaldiv);
       };
 
       Plugin.prototype.destroy = function() {
