@@ -3,6 +3,7 @@
   pluginName = 'omnipost'
   defaults =
     editing: true
+    callback: ''
     postcontent: ''
     linkedcontent: ''
 
@@ -108,6 +109,8 @@
       @init()
     
     init: ->
+      message = 'Post your reply here...'
+      omnipostdiv = $("<div class = 'ui-omnipost'></div>")
       linkPanel = new LinkPanel('ui-linkbox', 'images/linkAttach.png', 'images/collapse.png')
       videoPanel = new VideoPanel('ui-linkbox', 'images/videoAttach.png', 'images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
@@ -127,30 +130,31 @@
       omnicontainer.append(text)
       omnicontainer.append(collapse)
       omnicontainer.append(panelselectors)
-      $(@element).append(omnicontainer)
-      linkPanel.addPanelToContainer($(@element))
+      omnipostdiv.append(omnicontainer)
+      linkPanel.addPanelToContainer(omnipostdiv)
       linkPanel.hide()
-      videoPanel.addPanelToContainer($(@element))
+      videoPanel.addPanelToContainer(omnipostdiv)
       videoPanel.hide()
       $(@element).append(selectedImageLink)
       $(@element).append($('<br/>'))
       post = $("<button id='ui-omniPostSubmit'>Post</button>")
-      $(@element).append(post)
+      omnipostdiv.append(post)
+      $(@element).append(omnipostdiv)
       $(@element).addClass('ui-omniPost')
-      $(@element).focusin( =>
+      omnipostdiv.focusin( =>
         unless text.attr('readonly')
           post.show()
           collapse.show()
           panelselectors.show()
           text.height(50) if text.height() < 50
         text.removeClass('ui-omniPostActive')
-        if text.val() is $(@element).attr('title')
+        if text.val() is message
           text.val('')
       )
      
       collapse.click( =>          
         post.hide()
-        text.val($(@element).attr('title'))
+        text.val(message)
         text.addClass('ui-omniPostActive')
         text.height(28)
         collapse.hide()
@@ -168,8 +172,13 @@
         videoPanel.show()
       )
         
+      content: =>
+        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
+        return data
+  
       post.click( =>
-        # callback function
+        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
+        @options.callback(data)
       )
       
 
