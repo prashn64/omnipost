@@ -79,7 +79,7 @@
 
       LinkPanel.prototype.init = function() {
         var _this = this;
-        this.maximagewidth = 300;
+        this.maximagewidth = 350;
         LinkPanel.__super__.init.apply(this, arguments).init();
         this.linkbox = $("<textarea class='ui-omniPostLink'></textarea>");
         this.submitLink = $("<button class='ui-submitLink'>Add</button>");
@@ -128,9 +128,9 @@
 
       LinkPanel.prototype.content = function() {
         if (this.displayedContent === 'image') {
-          return this.attachedImage;
+          return $.trim(this.attachedImage[0].outerHTML);
         } else if (this.displayedContent === 'link') {
-          return this.linktosite;
+          return $.trim(this.linktosite[0].outerHTML);
         } else {
           return null;
         }
@@ -247,6 +247,7 @@
             posttext: $.trim(text.val()),
             linkdata: linkPanel.content()
           };
+          omnipostdiv.remove();
           return _this.options.callback(data);
         });
       };

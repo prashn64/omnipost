@@ -41,7 +41,7 @@
 
   class LinkPanel extends Panel   
     init: ->
-      @maximagewidth = 300;
+      @maximagewidth = 350;
       super.init()
       @linkbox = $("<textarea class='ui-omniPostLink'></textarea>")
       @submitLink = $("<button class='ui-submitLink'>Add</button>")
@@ -87,9 +87,9 @@
 
     content: =>
       if @displayedContent is 'image'
-        return @attachedImage
+        return $.trim(@attachedImage[0].outerHTML)
       else if @displayedContent is 'link'
-        return @linktosite
+        return $.trim(@linktosite[0].outerHTML)
       else
         return null
  
@@ -177,7 +177,8 @@
         return data
   
       post.click( =>
-        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
+        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}        
+        omnipostdiv.remove()
         @options.callback(data)
       )
       
