@@ -3,6 +3,7 @@
   pluginName = 'omnipost'
   defaults =
     editing: true
+    callback: ''
     postcontent: ''
     linkedcontent: ''
 
@@ -40,7 +41,7 @@
 
   class LinkPanel extends Panel   
     init: ->
-      @maximagewidth = 300;
+      @maximagewidth = 350;
       super.init()
       @linkbox = $("<textarea class='ui-omniPostLink'></textarea>")
       @submitLink = $("<button class='ui-submitLink'>Add</button>")
@@ -86,9 +87,9 @@
 
     content: =>
       if @displayedContent is 'image'
-        return @attachedImage
+        return $.trim(@attachedImage[0].outerHTML)
       else if @displayedContent is 'link'
-        return @linktosite
+        return $.trim(@linktosite[0].outerHTML)
       else
         return null
  
@@ -108,102 +109,78 @@
       @init()
     
     init: ->
-      if @options.editing
-        linkPanel = new LinkPanel('ui-linkbox', 'images/linkAttach.png', 'images/collapse.png')
-        videoPanel = new VideoPanel('ui-linkbox', 'images/videoAttach.png', 'images/collapse.png')
-        collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
-        collapse.attr('src', 'images/collapse.png')
-        link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
-        link.attr('src', 'images/linkAttach.png')
-        videolink = $("<img alt='a' title='attach a link' id='ui-omniPostVideoAttach'>")
-        videolink.attr('src', 'images/videoAttach.png')
-        panelselectors = $("<div id = 'ui-panelSelectors'></div>")        
-        panelselectors.append(videolink)
-        panelselectors.append(link)
-        omnicontainer = $("<div id='ui-omniContainer'></div>")
-        text = $("<textarea id='ui-omniPostText'></textarea>")
-        text.autoResize(extraSpace: 50).addClass('ui-omniPost')
-        selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>")  
-        selectedImageLink.hide()        
-        omnicontainer.append(text)
-        omnicontainer.append(collapse)
-        omnicontainer.append(panelselectors)
-        $(@element).append(omnicontainer)
-        linkPanel.addPanelToContainer($(@element))
-        linkPanel.hide()
-        videoPanel.addPanelToContainer($(@element))
-        videoPanel.hide()
-        $(@element).append(selectedImageLink)
-        $(@element).append($('<br/>'))
-        post = $("<button id='ui-omniPostSubmit'>Post</button>")
-        $(@element).append(post)
-        $(@element).addClass('ui-omniPost')
-        $(@element).focusin( =>
-          unless text.attr('readonly')
-            post.show()
-            collapse.show()
-            panelselectors.show()
-            text.height(50) if text.height() < 50
-          text.removeClass('ui-omniPostActive')
-          if text.val() is $(@element).attr('title')
-            text.val('')
-        )
-        
-        collapse.click( =>          
-          post.hide()
-          text.val($(@element).attr('title'))
-          text.addClass('ui-omniPostActive')
-          text.height(28)
-          collapse.hide()
-          panelselectors.hide()
-          linkPanel.hide()
-          videoPanel.hide()
-        ).click()
-        # $(@element).focusout( => collapse.click() if text.val() is '')
-        
-        link.click( =>
-          linkPanel.show()
-        )
-        
-        videolink.click( =>
-          videoPanel.show()
-        )
-        
-        post.click( =>
-          if text.val() != '' or !linkPanel.isEmpty() 
-            post.remove()
-            textcontent = text.val()
-            text.remove()
-            linkedcontent = linkPanel.content()
-            linkPanel.remove()
-            videoPanel.remove()
-            collapse.remove()
-            panelselectors.remove()
-            @createcompletepost(textcontent, linkedcontent)
-        )          
-      else
-        @createcompletepost(@options.postcontent, @options.linkedcontent)
-
-    createcompletepost: (postcontent, linkedcontent) =>
-      posttext = $("<p class = 'posttext'>#{postcontent}</p>")
-      linkedelement = $("<img src = #{linkedcontent} alt = 'linked content' />")
-      $(document).ready( =>
-        linkedelement.error( =>  
-          linkedelement.remove()
-          linkedelement = $("<a href = #{linkedcontent}>#{linkedcontent}</a>")            
-          unless linkedcontent.indexOf("http://") is 0 
-            linkedelement.attr('href', 'http://' + linkedelement.attr('href'))
-          linkedcontentpreview = $("<iframe id='frame' src=#{linkedelement.attr('href')} scrolling = no></iframe>")
-          @omnifinaldiv.prepend(linkedelement)
-          @omnifinaldiv.prepend(linkedcontentpreview)
-        )
+      message = 'Post your reply here...'
+      omnipostdiv = $("<div class = 'ui-omnipost'></div>")
+      linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
+      videoPanel = new VideoPanel('ui-linkbox', '/images/videoAttach.png', '/images/collapse.png')
+      collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
+      collapse.attr('src', '/images/collapse.png')
+      link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
+      link.attr('src', '/images/linkAttach.png')
+      videolink = $("<img alt='a' title='attach a link' id='ui-omniPostVideoAttach'>")
+      videolink.attr('src', '/images/videoAttach.png')
+      panelselectors = $("<div id = 'ui-panelSelectors'></div>")        
+      panelselectors.append(videolink)
+      panelselectors.append(link)
+      omnicontainer = $("<div id='ui-omniContainer'></div>")
+      text = $("<textarea id='ui-omniPostText'></textarea>")
+      text.autoResize(extraSpace: 50).addClass('ui-omniPost')
+      selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>")  
+      selectedImageLink.hide()        
+      omnicontainer.append(text)
+      omnicontainer.append(collapse)
+      omnicontainer.append(panelselectors)
+      omnipostdiv.append(omnicontainer)
+      linkPanel.addPanelToContainer(omnipostdiv)
+      linkPanel.hide()
+      videoPanel.addPanelToContainer(omnipostdiv)
+      videoPanel.hide()
+      $(@element).append(selectedImageLink)
+      $(@element).append($('<br/>'))
+      post = $("<button id='ui-omniPostSubmit'>Post</button>")
+      omnipostdiv.append(post)
+      $(@element).append(omnipostdiv)
+      $(@element).addClass('ui-omniPost')
+      omnipostdiv.focusin( =>
+        unless text.attr('readonly')
+          post.show()
+          collapse.show()
+          panelselectors.show()
+          text.height(50) if text.height() < 50
+        text.removeClass('ui-omniPostActive')
+        if text.val() is message
+          text.val('')
       )
-      @omnifinaldiv = $("<div id = 'ui-postedcontent'></div>")
-      unless linkedcontent is null
-        @omnifinaldiv.append(linkedelement)
-      unless postcontent is ''         
-        @omnifinaldiv.append(posttext)
-      $(@element).append(@omnifinaldiv)
+     
+      collapse.click( =>          
+        post.hide()
+        text.val(message)
+        text.addClass('ui-omniPostActive')
+        text.height(28)
+        collapse.hide()
+        panelselectors.hide()
+        linkPanel.hide()
+        videoPanel.hide()
+      ).click()
+      # $(@element).focusout( => collapse.click() if text.val() is '')
+        
+      link.click( =>
+        linkPanel.show()
+      )
+        
+      videolink.click( =>
+        videoPanel.show()
+      )
+        
+      content: =>
+        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
+        return data
+  
+      post.click( =>
+        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}        
+        omnipostdiv.remove()
+        @options.callback(data)
+      )
       
 
     destroy: ->
