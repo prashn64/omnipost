@@ -1,5 +1,5 @@
 .ui-omniPost {
-    width:300px;
+    width:200px;
 }
     
 .ui-omniPostActive {
@@ -15,7 +15,7 @@
 #ui-omniContainer {
     border: 1px solid black;
     position: relative;
-    width: 500px;
+    width: 350px;
 }
 #ui-omniPostText {
     position: relative;
@@ -58,14 +58,14 @@
 }
 
 .ui-linkbox {
-    width: 500px;
+    width: 350px;
     position: relative;
     border: 1px solid black;
     border-top-style: none;
 }
 
 .ui-omniPostLink {
-    width: 350px;
+    width: 200px;
     height: 20px;
     margin: 10px;
     resize: none;
