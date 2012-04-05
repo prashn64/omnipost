@@ -112,7 +112,7 @@
       message = 'Post your reply here...'
       omnipostdiv = $("<div class = 'ui-omnipost'></div>")
       linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
-      videoPanel = new VideoPanel('ui-linkbox', '/images/videoAttach.png', '/images/collapse.png')
+      videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
       collapse.attr('src', '/images/collapse.png')
       link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
@@ -165,10 +165,12 @@
       # $(@element).focusout( => collapse.click() if text.val() is '')
         
       link.click( =>
+        event.stopPrapogation()
         linkPanel.show()
       )
         
       videolink.click( =>
+        event.stopPropagation()
         videoPanel.show()
       )
         
