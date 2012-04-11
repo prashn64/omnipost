@@ -6,7 +6,8 @@
     callback: ''
     postcontent: ''
     linkedcontent: ''
-
+    # states include none, text, link, video, linkandvideo, videoandlink
+    state: 'none'
   class Panel
     constructor: (@id, @iconSrc, @collapseSrc) ->
       @init()
@@ -141,7 +142,7 @@
       omnipostdiv.append(post)
       $(@element).append(omnipostdiv)
       $(@element).addClass('ui-omniPost')
-      omnicontainer.focusin( =>
+      omnicontainer.click( =>
         unless text.attr('readonly')
           post.show()
           collapse.show()
@@ -150,9 +151,13 @@
         text.removeClass('ui-omniPostActive')
         if text.val() is message
           text.val('')
+        text.focus()
+        if @options.state is 'none'
+          @options.state = 'text'
+        $(@element).trigger('omnicontainerOpened', @options.state)
       )
      
-      collapse.click( =>          
+      collapse.click( (event) =>       
         post.hide()
         text.val(message)
         text.addClass('ui-omniPostActive')
@@ -161,17 +166,31 @@
         panelselectors.hide()
         linkPanel.hide()
         videoPanel.hide()
-      ).click()
-      # $(@element).focusout( => collapse.click() if text.val() is '')
+        event.stopPropagation()
+        @options.state = 'none'
+        $(@element).trigger('omnicontainerClosed', @options.state)
+      )
+
+      collapse.click()
         
-      link.click( =>
-        event.stopPrapogation()
+      link.click( (event) =>
+        event.stopPropagation()
         linkPanel.show()
+        if @options.state is 'video'
+          @options.state = 'videoandlink'
+        else
+          @options.state = 'link'
+        $(@element).trigger('linkpanelOpened', @options.state)          
       )
         
-      videolink.click( =>
+      videolink.click( (event) =>
         event.stopPropagation()
         videoPanel.show()
+        if @options.state is 'link'
+          @options.state = 'linkandvideo'
+        else
+          @options.state = 'video'
+        $(@element).trigger('videopanelOpened', @options.state)
       )
         
       content: =>

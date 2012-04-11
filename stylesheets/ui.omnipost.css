@@ -13,6 +13,7 @@
     
 
 #ui-omniContainer {
+    cursor: text;
     border: 1px solid black;
     background-color: white;
     position: relative;
