@@ -55,4 +55,14 @@ test("collapse button clicked",
     equal(testUtils.state, 'none', "The video has been clicked, state should be none")
   )
 )
+
+test("link button clicked after video button", 
+  ( ->             
+    omnipost = testUtils.init()
+    omnipost.find('#ui-omniContainer').click()
+    omnipost.find('#ui-omniPostVideoAttach').click()
+    omnipost.find('#ui-omniPostAttach').click()
+    equal(testUtils.state, 'videoandlink', "The link has been clicked, state should be videoandlink")
+  )
+)
 )

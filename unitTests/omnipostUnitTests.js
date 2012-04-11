@@ -52,5 +52,13 @@
     omnipost.find('#ui-omniPostCollapse').click();
     return equal(testUtils.state, 'none', "The video has been clicked, state should be none");
   }));
+  test("link button clicked after video button", (function() {
+    var omnipost;
+    omnipost = testUtils.init();
+    omnipost.find('#ui-omniContainer').click();
+    omnipost.find('#ui-omniPostVideoAttach').click();
+    omnipost.find('#ui-omniPostAttach').click();
+    return equal(testUtils.state, 'videoandlink', "The link has been clicked, state should be videoandlink");
+  }));
 
 }).call(this);

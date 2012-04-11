@@ -27,7 +27,8 @@
     border: none;
 }
 
-#ui-omniPostCollapse {
+#ui-omniPostCollapse {    
+    cursor: pointer;
     height:16px;
     position:absolute;    
     top: 0px;    
@@ -44,12 +45,14 @@
     padding: 0;
 }
 
-#ui-omniPostAttach {
+#ui-omniPostAttach {    
+    cursor: pointer;
     height:16px;
     margin: 5px;
 }
 
-#ui-omniPostVideoAttach {
+#ui-omniPostVideoAttach {    
+    cursor: pointer;
     height: 16px;
     margin: 5px;
 }

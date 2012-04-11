@@ -178,7 +178,7 @@
         linkPanel.show()
         if @options.state is 'video'
           @options.state = 'videoandlink'
-        else
+        else if @options.state is 'text'
           @options.state = 'link'
         $(@element).trigger('linkpanelOpened', @options.state)          
       )
@@ -188,7 +188,7 @@
         videoPanel.show()
         if @options.state is 'link'
           @options.state = 'linkandvideo'
-        else
+        else if @options.state is 'text'
           @options.state = 'video'
         $(@element).trigger('videopanelOpened', @options.state)
       )

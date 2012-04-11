@@ -238,7 +238,7 @@
           linkPanel.show();
           if (_this.options.state === 'video') {
             _this.options.state = 'videoandlink';
-          } else {
+          } else if (_this.options.state === 'text') {
             _this.options.state = 'link';
           }
           return $(_this.element).trigger('linkpanelOpened', _this.options.state);
@@ -248,7 +248,7 @@
           videoPanel.show();
           if (_this.options.state === 'link') {
             _this.options.state = 'linkandvideo';
-          } else {
+          } else if (_this.options.state === 'text') {
             _this.options.state = 'video';
           }
           return $(_this.element).trigger('videopanelOpened', _this.options.state);
