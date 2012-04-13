@@ -9,8 +9,7 @@
     defaults = {
       editing: true,
       callback: '',
-      postcontent: '',
-      linkedcontent: ''
+      state: 'none'
     };
     Panel = (function() {
 
@@ -174,7 +173,7 @@
         message = 'Post your reply here...';
         omnipostdiv = $("<div class = 'ui-omnipost'></div>");
         linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png');
-        videoPanel = new VideoPanel('ui-linkbox', '/images/videoAttach.png', '/images/collapse.png');
+        videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png');
         collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>");
         collapse.attr('src', '/images/collapse.png');
         link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>");
@@ -205,7 +204,7 @@
         omnipostdiv.append(post);
         $(this.element).append(omnipostdiv);
         $(this.element).addClass('ui-omniPost');
-        omnipostdiv.focusin(function() {
+        omnicontainer.click(function() {
           if (!text.attr('readonly')) {
             post.show();
             collapse.show();
@@ -213,9 +212,12 @@
             if (text.height() < 50) text.height(50);
           }
           text.removeClass('ui-omniPostActive');
-          if (text.val() === message) return text.val('');
+          if (text.val() === message) text.val('');
+          text.focus();
+          if (_this.options.state === 'none') _this.options.state = 'text';
+          return $(_this.element).trigger('omnicontainerOpened', _this.options.state);
         });
-        collapse.click(function() {
+        collapse.click(function(event) {
           post.hide();
           text.val(message);
           text.addClass('ui-omniPostActive');
@@ -223,23 +225,31 @@
           collapse.hide();
           panelselectors.hide();
           linkPanel.hide();
-          return videoPanel.hide();
-        }).click();
-        link.click(function() {
-          return linkPanel.show();
+          videoPanel.hide();
+          event.stopPropagation();
+          _this.options.state = 'none';
+          return $(_this.element).trigger('omnicontainerClosed', _this.options.state);
         });
-        videolink.click(function() {
-          return videoPanel.show();
-        });
-        ({
-          content: function() {
-            var data;
-            data = {
-              posttext: $.trim(text.val()),
-              linkdata: linkPanel.content()
-            };
-            return data;
+        collapse.click();
+        link.click(function(event) {
+          event.stopPropagation();
+          linkPanel.show();
+          if (_this.options.state === 'video') {
+            _this.options.state = 'videoandlink';
+          } else if (_this.options.state === 'text') {
+            _this.options.state = 'link';
           }
+          return $(_this.element).trigger('linkpanelOpened', _this.options.state);
+        });
+        videolink.click(function(event) {
+          event.stopPropagation();
+          videoPanel.show();
+          if (_this.options.state === 'link') {
+            _this.options.state = 'linkandvideo';
+          } else if (_this.options.state === 'text') {
+            _this.options.state = 'video';
+          }
+          return $(_this.element).trigger('videopanelOpened', _this.options.state);
         });
         return post.click(function() {
           var data;

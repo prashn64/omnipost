@@ -4,9 +4,9 @@
   defaults =
     editing: true
     callback: ''
-    postcontent: ''
-    linkedcontent: ''
 
+    # states include none, text, link, video, linkandvideo, videoandlink
+    state: 'none'
   class Panel
     constructor: (@id, @iconSrc, @collapseSrc) ->
       @init()
@@ -112,7 +112,7 @@
       message = 'Post your reply here...'
       omnipostdiv = $("<div class = 'ui-omnipost'></div>")
       linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
-      videoPanel = new VideoPanel('ui-linkbox', '/images/videoAttach.png', '/images/collapse.png')
+      videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
       collapse.attr('src', '/images/collapse.png')
       link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
@@ -141,7 +141,7 @@
       omnipostdiv.append(post)
       $(@element).append(omnipostdiv)
       $(@element).addClass('ui-omniPost')
-      omnipostdiv.focusin( =>
+      omnicontainer.click( =>
         unless text.attr('readonly')
           post.show()
           collapse.show()
@@ -150,9 +150,13 @@
         text.removeClass('ui-omniPostActive')
         if text.val() is message
           text.val('')
+        text.focus()
+        if @options.state is 'none'
+          @options.state = 'text'
+        $(@element).trigger('omnicontainerOpened', @options.state)
       )
      
-      collapse.click( =>          
+      collapse.click( (event) =>       
         post.hide()
         text.val(message)
         text.addClass('ui-omniPostActive')
@@ -161,21 +165,33 @@
         panelselectors.hide()
         linkPanel.hide()
         videoPanel.hide()
-      ).click()
-      # $(@element).focusout( => collapse.click() if text.val() is '')
+        event.stopPropagation()
+        @options.state = 'none'
+        $(@element).trigger('omnicontainerClosed', @options.state)
+      )
+
+      collapse.click()
         
-      link.click( =>
+      link.click( (event) =>
+        event.stopPropagation()
         linkPanel.show()
+        if @options.state is 'video'
+          @options.state = 'videoandlink'
+        else if @options.state is 'text'
+          @options.state = 'link'
+        $(@element).trigger('linkpanelOpened', @options.state)          
       )
         
-      videolink.click( =>
+      videolink.click( (event) =>
+        event.stopPropagation()
         videoPanel.show()
+        if @options.state is 'link'
+          @options.state = 'linkandvideo'
+        else if @options.state is 'text'
+          @options.state = 'video'
+        $(@element).trigger('videopanelOpened', @options.state)
       )
-        
-      content: =>
-        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
-        return data
-  
+      
       post.click( =>
         data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}        
         omnipostdiv.remove()
