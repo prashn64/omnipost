@@ -1,7 +1,11 @@
 ( ->
 testUtils = 
-  state: 'none'
+  state: 0
+  panelCount: 0
 
+  states: 
+    none: 0,
+    open: 1
   defaultTestOptions:
     selector: '#myPostBox',
     voteboxOptions : {}
@@ -10,6 +14,7 @@ testUtils =
     testUtils.reset()
     opts = $.extend {}, testUtils.defaultTestOptions, options
     $(opts.selector).omnipost(opts.voteboxOptions)
+    $(opts.selector).bind('panelsChanged', testUtils.setPanelCount)
     $(opts.selector).bind('omnicontainerOpened', testUtils.setState)
     $(opts.selector).bind('linkpanelOpened', testUtils.setState)
     $(opts.selector).bind('videopanelOpened', testUtils.setState) 
@@ -18,6 +23,9 @@ testUtils =
 
   setState: (event, state) ->
     testUtils.state = state 
+
+  setPanelCount: (event, count) ->
+    testUtils.panelCount = count
 
   reset: ->
     $(testUtils.defaultTestOptions.selector).unbind('omnicontainerOpened', testUtils.setState)
@@ -31,41 +39,24 @@ test("omnipost area clicked",
   ( ->             
     omnipost = testUtils.init()
     omnipost.find('#ui-omniContainer').click()
-    equal(testUtils.state, 'text', "The omnicontainer has been clicked, state should be text")
+    equal(testUtils.state, testUtils.states.open, "The omnicontainer has been clicked, state should be open")
   )
 )
 
-test("link button clicked", 
+test("panel length testing", 
   ( ->             
     omnipost = testUtils.init()
     omnipost.find('#ui-omniPostAttach').click()
-    equal(testUtils.state, 'link', "The link has been clicked, state should be link")
-  )
-)
-
-test("video button clicked after link button", 
-  ( ->             
-    omnipost = testUtils.init()
+    equal(testUtils.panelCount, 1, "The link has been clicked, panel count should be 1")
     omnipost.find('#ui-omniPostVideoAttach').click()
-    equal(testUtils.state, 'linkandvideo', "The video has been clicked, state should be linkandvideo")
-  )
-)
-
-test("collapse button clicked", 
-  ( ->             
-    omnipost = testUtils.init()
+    equal(testUtils.panelCount, 2, "The video has been clicked, panel count should be 2")   
+    omnipost.find('.ui-videobox:eq(0) .ui-panelcollapseicon:eq(0)').click()
+    equal(testUtils.panelCount, 1, "The video close icon has been clicked, panel count should be 1")
+    omnipost.find('#ui-omniPostVideoAttach').click()
+    equal(testUtils.panelCount, 2, "The video has been clicked again, panel count should be 2")
     omnipost.find('#ui-omniPostCollapse').click()
-    equal(testUtils.state, 'none', "The video has been clicked, state should be none")
-  )
-)
-
-test("link button clicked after video button", 
-  ( ->             
-    omnipost = testUtils.init()
-    omnipost.find('#ui-omniContainer').click()
-    omnipost.find('#ui-omniPostVideoAttach').click()
-    omnipost.find('#ui-omniPostAttach').click()
-    equal(testUtils.state, 'videoandlink', "The link has been clicked, state should be videoandlink")
+    equal(testUtils.panelCount, 0, "The omnipost window has been closed, panel count should be 0")
+    equal(testUtils.state, testUtils.states.none, "The state should be none")
   )
 )
 )

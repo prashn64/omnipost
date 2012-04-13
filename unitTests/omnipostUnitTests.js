@@ -3,7 +3,12 @@
 
   (function() {});
   testUtils = {
-    state: 'none',
+    state: 0,
+    panelCount: 0,
+    states: {
+      none: 0,
+      open: 1
+    },
     defaultTestOptions: {
       selector: '#myPostBox',
       voteboxOptions: {}
@@ -13,6 +18,7 @@
       testUtils.reset();
       opts = $.extend({}, testUtils.defaultTestOptions, options);
       $(opts.selector).omnipost(opts.voteboxOptions);
+      $(opts.selector).bind('panelsChanged', testUtils.setPanelCount);
       $(opts.selector).bind('omnicontainerOpened', testUtils.setState);
       $(opts.selector).bind('linkpanelOpened', testUtils.setState);
       $(opts.selector).bind('videopanelOpened', testUtils.setState);
@@ -21,6 +27,9 @@
     },
     setState: function(event, state) {
       return testUtils.state = state;
+    },
+    setPanelCount: function(event, count) {
+      return testUtils.panelCount = count;
     },
     reset: function() {
       $(testUtils.defaultTestOptions.selector).unbind('omnicontainerOpened', testUtils.setState);
@@ -35,33 +44,22 @@
     var omnipost;
     omnipost = testUtils.init();
     omnipost.find('#ui-omniContainer').click();
-    return equal(testUtils.state, 'text', "The omnicontainer has been clicked, state should be text");
+    return equal(testUtils.state, testUtils.states.open, "The omnicontainer has been clicked, state should be open");
   }));
-  test("link button clicked", (function() {
+  test("panel length testing", (function() {
     var omnipost;
     omnipost = testUtils.init();
     omnipost.find('#ui-omniPostAttach').click();
-    return equal(testUtils.state, 'link', "The link has been clicked, state should be link");
-  }));
-  test("video button clicked after link button", (function() {
-    var omnipost;
-    omnipost = testUtils.init();
+    equal(testUtils.panelCount, 1, "The link has been clicked, panel count should be 1");
     omnipost.find('#ui-omniPostVideoAttach').click();
-    return equal(testUtils.state, 'linkandvideo', "The video has been clicked, state should be linkandvideo");
-  }));
-  test("collapse button clicked", (function() {
-    var omnipost;
-    omnipost = testUtils.init();
+    equal(testUtils.panelCount, 2, "The video has been clicked, panel count should be 2");
+    omnipost.find('.ui-videobox:eq(0) .ui-panelcollapseicon:eq(0)').click();
+    equal(testUtils.panelCount, 1, "The video close icon has been clicked, panel count should be 1");
+    omnipost.find('#ui-omniPostVideoAttach').click();
+    equal(testUtils.panelCount, 2, "The video has been clicked again, panel count should be 2");
     omnipost.find('#ui-omniPostCollapse').click();
-    return equal(testUtils.state, 'none', "The video has been clicked, state should be none");
-  }));
-  test("link button clicked after video button", (function() {
-    var omnipost;
-    omnipost = testUtils.init();
-    omnipost.find('#ui-omniContainer').click();
-    omnipost.find('#ui-omniPostVideoAttach').click();
-    omnipost.find('#ui-omniPostAttach').click();
-    return equal(testUtils.state, 'videoandlink', "The link has been clicked, state should be videoandlink");
+    equal(testUtils.panelCount, 0, "The omnipost window has been closed, panel count should be 0");
+    return equal(testUtils.state, testUtils.states.none, "The state should be none");
   }));
 
 }).call(this);
