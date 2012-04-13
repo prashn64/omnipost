@@ -4,8 +4,7 @@
   defaults =
     editing: true
     callback: ''
-    postcontent: ''
-    linkedcontent: ''
+
     # states include none, text, link, video, linkandvideo, videoandlink
     state: 'none'
   class Panel
@@ -192,11 +191,7 @@
           @options.state = 'video'
         $(@element).trigger('videopanelOpened', @options.state)
       )
-        
-      content: =>
-        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}
-        return data
-  
+      
       post.click( =>
         data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}        
         omnipostdiv.remove()

@@ -9,8 +9,6 @@
     defaults = {
       editing: true,
       callback: '',
-      postcontent: '',
-      linkedcontent: '',
       state: 'none'
     };
     Panel = (function() {
@@ -252,16 +250,6 @@
             _this.options.state = 'video';
           }
           return $(_this.element).trigger('videopanelOpened', _this.options.state);
-        });
-        ({
-          content: function() {
-            var data;
-            data = {
-              posttext: $.trim(text.val()),
-              linkdata: linkPanel.content()
-            };
-            return data;
-          }
         });
         return post.click(function() {
           var data;
