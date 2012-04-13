@@ -4,11 +4,12 @@
   defaults =
     editing: true
     callback: ''
-
-    # states include none, text, link, video, linkandvideo, videoandlink
-    state: 'none'
+  states =
+    none: 0
+    open: 1
+    
   class Panel
-    constructor: (@id, @iconSrc, @collapseSrc) ->
+    constructor: (@id, @iconSrc, @collapseSrc, @removalCallBack) ->
       @init()
         
     init: =>
@@ -21,7 +22,7 @@
       @panelcontainer.append(@collapseIcon)
       @panelcontainer.append(@submitLink) 
       @collapseIcon.click( =>
-        @hide()
+        @remove()
       )
 
     addPanelToContainer: (container) =>
@@ -32,12 +33,13 @@
                       
     hide: =>
       @panelcontainer.hide()
-
+       
     isEmpty: =>
       return @linkbox.val() is ''
   
     remove: =>
-       @panelcontainer.remove()
+      @removalCallBack(this)
+      @panelcontainer.remove()
 
   class LinkPanel extends Panel   
     init: ->
@@ -106,13 +108,16 @@
       @options = $.extend {}, defaults, options
       @_defaults = defaults
       @_name = 'tagbox'
+      @_states = states
       @init()
     
     init: ->
+      @state = @_states.none
+      @panelList = []
       message = 'Post your reply here...'
       omnipostdiv = $("<div class = 'ui-omnipost'></div>")
-      linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
-      videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
+      #linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
+      #videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
       collapse.attr('src', '/images/collapse.png')
       link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
@@ -131,11 +136,9 @@
       omnicontainer.append(collapse)
       omnicontainer.append(panelselectors)
       omnipostdiv.append(omnicontainer)
-      linkPanel.addPanelToContainer(omnipostdiv)
-      linkPanel.hide()
-      videoPanel.addPanelToContainer(omnipostdiv)
-      videoPanel.hide()
       $(@element).append(selectedImageLink)
+      paneldiv = $("<div id='panels-container'></div>")
+      omnipostdiv.append(paneldiv)
       $(@element).append($('<br/>'))
       post = $("<button id='ui-omniPostSubmit'>Post</button>")
       omnipostdiv.append(post)
@@ -151,9 +154,9 @@
         if text.val() is message
           text.val('')
         text.focus()
-        if @options.state is 'none'
-          @options.state = 'text'
-        $(@element).trigger('omnicontainerOpened', @options.state)
+        if @state is @_states.none
+          @state = @_states.open
+        $(@element).trigger('omnicontainerOpened', @state)
       )
      
       collapse.click( (event) =>       
@@ -163,41 +166,56 @@
         text.height(28)
         collapse.hide()
         panelselectors.hide()
-        linkPanel.hide()
-        videoPanel.hide()
+        @removeAllPanels()
         event.stopPropagation()
-        @options.state = 'none'
-        $(@element).trigger('omnicontainerClosed', @options.state)
+        @state = @_states.none
+        $(@element).trigger('omnicontainerClosed', @state)
       )
 
       collapse.click()
         
       link.click( (event) =>
         event.stopPropagation()
+        linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png', @removeElementFromPanelList)
+        linkPanel.addPanelToContainer(paneldiv)
+        linkPanel.hide()
         linkPanel.show()
-        if @options.state is 'video'
-          @options.state = 'videoandlink'
-        else if @options.state is 'text'
-          @options.state = 'link'
-        $(@element).trigger('linkpanelOpened', @options.state)          
+        @panelList.push(linkPanel)
+        $(@element).trigger('panelsChanged', @panelList.length)        
       )
         
       videolink.click( (event) =>
         event.stopPropagation()
+        videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png', @removeElementFromPanelList)
+        videoPanel.addPanelToContainer(paneldiv)
+        videoPanel.hide()
         videoPanel.show()
-        if @options.state is 'link'
-          @options.state = 'linkandvideo'
-        else if @options.state is 'text'
-          @options.state = 'video'
-        $(@element).trigger('videopanelOpened', @options.state)
+        @panelList.push(videoPanel)
+        $(@element).trigger('panelsChanged', @panelList.length)
       )
       
       post.click( =>
-        data = {posttext: $.trim(text.val()), linkdata: linkPanel.content()}        
+        allPanelContent = $("<div id='rich-content'></div>")
+        for panel in @panelList
+          allPanelContent.append(panel.content())
+        data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}        
         omnipostdiv.remove()
         @options.callback(data)
       )
-      
+  
+    removeAllPanels: =>
+      removedPanels = []
+      for panel in @panelList
+        removedPanels.push(panel)
+      for panel in removedPanels
+        panel.remove()
+      $(@element).trigger('panelsChanged', @panelList.length)
+
+    removeElementFromPanelList: (element) =>
+      index = @panelList.indexOf(element)
+      if index > -1
+        @panelList.splice(index, 1)
+      $(@element).trigger('panelsChanged', @panelList.length)
 
     destroy: ->
       $(@element).remove()
