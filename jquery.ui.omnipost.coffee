@@ -198,7 +198,8 @@
         allPanelContent = $("<div id='rich-content'></div>")
         for panel in @panelList
           allPanelContent.append(panel.content())
-        data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}        
+        data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
+        data = JSON.stringify(data)
         omnipostdiv.remove()
         @options.callback(data)
       )
