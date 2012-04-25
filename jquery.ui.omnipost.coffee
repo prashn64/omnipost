@@ -4,6 +4,7 @@
   defaults =
     editing: true
     callback: ''
+    message: 'Post your reply here...'
   states =
     none: 0
     open: 1
@@ -114,7 +115,7 @@
     init: ->
       @state = @_states.none
       @panelList = []
-      message = 'Post your reply here...'
+      message = @options.message
       omnipostdiv = $("<div class = 'ui-omnipost'></div>")
       #linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
       #videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
