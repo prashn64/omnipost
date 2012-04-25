@@ -201,7 +201,7 @@
           allPanelContent.append(panel.content())
         data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
         data = JSON.stringify(data)
-        omnipostdiv.remove()
+        collapse.click()        
         @options.callback(data)
       )
   
