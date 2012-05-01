@@ -3,6 +3,7 @@
   pluginName = 'omnipost'
   defaults =
     editing: true
+    removeOnSubmit: false
     callback: ''
     message: 'Post your reply here...'
   states =
@@ -201,7 +202,9 @@
           allPanelContent.append(panel.content())
         data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
         data = JSON.stringify(data)
-        collapse.click()        
+        collapse.click()
+        if @options.removeOnSubmit
+          omnipostdiv.remove()
         @options.callback(data)
       )
   
