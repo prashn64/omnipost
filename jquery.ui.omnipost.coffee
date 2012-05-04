@@ -117,7 +117,6 @@
       @state = @_states.none
       @panelList = []
       message = @options.message
-      omnipostdiv = $("<div class = 'ui-omnipost'></div>")
       #linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
       #videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
@@ -137,14 +136,13 @@
       omnicontainer.append(text)
       omnicontainer.append(collapse)
       omnicontainer.append(panelselectors)
-      omnipostdiv.append(omnicontainer)
+      $(@element).append(omnicontainer)
       $(@element).append(selectedImageLink)
       paneldiv = $("<div id='panels-container'></div>")
-      omnipostdiv.append(paneldiv)
+      $(@element).append(paneldiv)
       $(@element).append($('<br/>'))
       post = $("<button id='ui-omniPostSubmit'>Post</button>")
-      omnipostdiv.append(post)
-      $(@element).append(omnipostdiv)
+      $(@element).append(post)
       $(@element).addClass('ui-omniPost')
       omnicontainer.click( =>
         unless text.attr('readonly')
@@ -204,7 +202,7 @@
         data = JSON.stringify(data)
         collapse.click()
         if @options.removeOnSubmit
-          omnipostdiv.remove()
+          $(@element).remove()
         @options.callback(data)
       )
   
