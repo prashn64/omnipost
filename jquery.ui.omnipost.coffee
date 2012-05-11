@@ -54,7 +54,7 @@
       @linktosite = $("<a href = #{@linkbox.val()} class = 'ui-linkToSite'></a>")
       @linkedcontentpreview = $("<iframe id='frame' src='' scrolling = no></iframe>")
       @panelcontainer.append(@linkbox)
-      @panelcontainer.append(@submitLink)      
+      @panelcontainer.append(@submitLink)     
       @panelcontainer.append(@attachedImage)
       @panelcontainer.append(@linktosite)
       @panelcontainer.append(@linkedcontentpreview)
@@ -117,17 +117,8 @@
       @state = @_states.none
       @panelList = []
       message = @options.message
-      #linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png')
-      #videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png')
       collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
       collapse.attr('src', '/images/collapse.png')
-      link = $("<img alt='a' title='attach a link' id='ui-omniPostAttach'>")
-      link.attr('src', '/images/linkAttach.png')
-      videolink = $("<img alt='a' title='attach a link' id='ui-omniPostVideoAttach'>")
-      videolink.attr('src', '/images/videoAttach.png')
-      panelselectors = $("<div id = 'ui-panelSelectors'></div>")        
-      panelselectors.append(videolink)
-      panelselectors.append(link)
       omnicontainer = $("<div id='ui-omniContainer'></div>")
       text = $("<textarea id='ui-omniPostText'></textarea>")
       text.autosize().addClass('ui-omniPost')
@@ -135,11 +126,8 @@
       selectedImageLink.hide()        
       omnicontainer.append(text)
       omnicontainer.append(collapse)
-      omnicontainer.append(panelselectors)
       $(@element).append(omnicontainer)
       $(@element).append(selectedImageLink)
-      paneldiv = $("<div id='panels-container'></div>")
-      $(@element).append(paneldiv)
       $(@element).append($('<br/>'))
       post = $("<button id='ui-omniPostSubmit'>Post</button>")
       $(@element).append(post)
@@ -148,7 +136,6 @@
         unless text.attr('readonly')
           post.show()
           collapse.show()
-          panelselectors.show()
           text.height(50) if text.height() < 50
         text.removeClass('ui-omniPostActive')
         if text.val() is message
@@ -165,7 +152,6 @@
         text.addClass('ui-omniPostActive')
         text.height(28)
         collapse.hide()
-        panelselectors.hide()
         @removeAllPanels()
         event.stopPropagation()
         @state = @_states.none
@@ -173,26 +159,6 @@
       )
 
       collapse.click()
-        
-      link.click( (event) =>
-        event.stopPropagation()
-        linkPanel = new LinkPanel('ui-linkbox', '/images/linkAttach.png', '/images/collapse.png', @removeElementFromPanelList)
-        linkPanel.addPanelToContainer(paneldiv)
-        linkPanel.hide()
-        linkPanel.show()
-        @panelList.push(linkPanel)
-        $(@element).trigger('panelsChanged', @panelList.length)        
-      )
-        
-      videolink.click( (event) =>
-        event.stopPropagation()
-        videoPanel = new VideoPanel('ui-videobox', '/images/videoAttach.png', '/images/collapse.png', @removeElementFromPanelList)
-        videoPanel.addPanelToContainer(paneldiv)
-        videoPanel.hide()
-        videoPanel.show()
-        @panelList.push(videoPanel)
-        $(@element).trigger('panelsChanged', @panelList.length)
-      )
       
       post.click( =>
         allPanelContent = $("<div id='rich-content'></div>")
