@@ -166,10 +166,10 @@
           allPanelContent = $("<div id='rich-content'></div>")
           for panel in @panelList
             allPanelContent.append(panel.content())
-          if allPanelContent[0].innerHTML is ''
-             data = {posttext: $.trim(text.val())}
-          else
-            data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
+          linkdata = allPanelContent[0].innerHTML
+          data = {}
+          data['posttext'] = $.trim(text.val())
+          data['linkdata'] = linkdata if linkdata
           data = JSON.stringify(data)
           collapse.click()
           if @options.removeOnSubmit

@@ -224,7 +224,7 @@
         });
         collapse.click();
         return post.click(function() {
-          var allPanelContent, data, panel, warning, _i, _len, _ref;
+          var allPanelContent, data, linkdata, panel, warning, _i, _len, _ref;
           if (!($.trim(text.val()) === '')) {
             allPanelContent = $("<div id='rich-content'></div>");
             _ref = _this.panelList;
@@ -232,16 +232,10 @@
               panel = _ref[_i];
               allPanelContent.append(panel.content());
             }
-            if (allPanelContent[0].innerHTML === '') {
-              data = {
-                posttext: $.trim(text.val())
-              };
-            } else {
-              data = {
-                posttext: $.trim(text.val()),
-                linkdata: allPanelContent[0].outerHTML
-              };
-            }
+            linkdata = allPanelContent[0].innerHTML;
+            data = {};
+            data['posttext'] = $.trim(text.val());
+            if (linkdata) data['linkdata'] = linkdata;
             data = JSON.stringify(data);
             collapse.click();
             if (_this.options.removeOnSubmit) $(_this.element).remove();
