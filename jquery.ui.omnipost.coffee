@@ -145,7 +145,7 @@
           @state = @_states.open
         $(@element).trigger('omnicontainerOpened', @state)
       )
-     
+      
       collapse.click( (event) =>       
         post.hide()
         text.val(message)
@@ -153,6 +153,7 @@
         text.height(28)
         collapse.hide()
         @removeAllPanels()
+        $(@element).find('#empty_post_warning').remove()
         event.stopPropagation()
         @state = @_states.none
         $(@element).trigger('omnicontainerClosed', @state)
@@ -161,15 +162,20 @@
       collapse.click()
       
       post.click( =>
-        allPanelContent = $("<div id='rich-content'></div>")
-        for panel in @panelList
-          allPanelContent.append(panel.content())
-        data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
-        data = JSON.stringify(data)
-        collapse.click()
-        if @options.removeOnSubmit
-          $(@element).remove()
-        @options.callback(data)
+        unless ($.trim(text.val()) is '')
+          allPanelContent = $("<div id='rich-content'></div>")
+          for panel in @panelList
+            allPanelContent.append(panel.content())
+          data = {posttext: $.trim(text.val()), linkdata: allPanelContent[0].outerHTML}
+          data = JSON.stringify(data)
+          collapse.click()
+          if @options.removeOnSubmit
+            $(@element).remove()
+          @options.callback(data)
+        else
+          warning = $("<h3 id='empty_post_warning'>You must write something post a reply</h3>")
+          if $(@element).find('#empty_post_warning').length == 0
+            $(@element).prepend(warning)
       )
   
     removeAllPanels: =>

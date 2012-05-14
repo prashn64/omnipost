@@ -217,27 +217,35 @@
           text.height(28);
           collapse.hide();
           _this.removeAllPanels();
+          $(_this.element).find('#empty_post_warning').remove();
           event.stopPropagation();
           _this.state = _this._states.none;
           return $(_this.element).trigger('omnicontainerClosed', _this.state);
         });
         collapse.click();
         return post.click(function() {
-          var allPanelContent, data, panel, _i, _len, _ref;
-          allPanelContent = $("<div id='rich-content'></div>");
-          _ref = _this.panelList;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            panel = _ref[_i];
-            allPanelContent.append(panel.content());
+          var allPanelContent, data, panel, warning, _i, _len, _ref;
+          if (!($.trim(text.val()) === '')) {
+            allPanelContent = $("<div id='rich-content'></div>");
+            _ref = _this.panelList;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              panel = _ref[_i];
+              allPanelContent.append(panel.content());
+            }
+            data = {
+              posttext: $.trim(text.val()),
+              linkdata: allPanelContent[0].outerHTML
+            };
+            data = JSON.stringify(data);
+            collapse.click();
+            if (_this.options.removeOnSubmit) $(_this.element).remove();
+            return _this.options.callback(data);
+          } else {
+            warning = $("<h3 id='empty_post_warning'>You must write something post a reply</h3>");
+            if ($(_this.element).find('#empty_post_warning').length === 0) {
+              return $(_this.element).prepend(warning);
+            }
           }
-          data = {
-            posttext: $.trim(text.val()),
-            linkdata: allPanelContent[0].outerHTML
-          };
-          data = JSON.stringify(data);
-          collapse.click();
-          if (_this.options.removeOnSubmit) $(_this.element).remove();
-          return _this.options.callback(data);
         });
       };
 
