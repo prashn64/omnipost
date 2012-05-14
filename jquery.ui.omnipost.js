@@ -232,10 +232,16 @@
               panel = _ref[_i];
               allPanelContent.append(panel.content());
             }
-            data = {
-              posttext: $.trim(text.val()),
-              linkdata: allPanelContent[0].outerHTML
-            };
+            if (allPanelContent[0].innerHTML === '') {
+              data = {
+                posttext: $.trim(text.val())
+              };
+            } else {
+              data = {
+                posttext: $.trim(text.val()),
+                linkdata: allPanelContent[0].outerHTML
+              };
+            }
             data = JSON.stringify(data);
             collapse.click();
             if (_this.options.removeOnSubmit) $(_this.element).remove();
