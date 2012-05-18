@@ -114,24 +114,26 @@
       @init()
     
     init: ->
+      template = "<div id='ui-omniContainer'>
+                    <textarea id='ui-omniPostText'></textarea>
+                    <img src='/images/collapse.png' alt='x' title='x' id='ui-omniPostCollapse'>
+                  </div>
+                  <button id='ui-omniPostSubmit'>Post</button>
+                 "
       @state = @_states.none
       @panelList = []
       message = @options.message
-      collapse = $("<img alt='x' title='x' id='ui-omniPostCollapse'>")  
-      collapse.attr('src', '/images/collapse.png')
-      omnicontainer = $("<div id='ui-omniContainer'></div>")
-      text = $("<textarea id='ui-omniPostText'></textarea>")
-      text.autosize().addClass('ui-omniPost')
-      selectedImageLink = $("<img alt='x' title='your linked image' id='ui-omniPostImage'>")  
-      selectedImageLink.hide()        
-      omnicontainer.append(text)
-      omnicontainer.append(collapse)
-      $(@element).append(omnicontainer)
-      $(@element).append(selectedImageLink)
-      $(@element).append($('<br/>'))
-      post = $("<button id='ui-omniPostSubmit'>Post</button>")
-      $(@element).append(post)
       $(@element).addClass('ui-omniPost')
+
+      templatedata = {}
+      html = Mustache.to_html(template, templatedata)
+      $(@element).html(html)
+
+      omnicontainer = $(@element).find('#ui-omniContainer')
+      text = $(@element).find('#ui-omniPostText')
+      collapse = $(@element).find('#ui-omniPostCollapse')
+      post = $(@element).find('#ui-omniPostSubmit')
+      
       omnicontainer.click( =>
         unless text.attr('readonly')
           post.show()
