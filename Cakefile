@@ -8,6 +8,9 @@ green = '\033[0;32m'
 reset = '\033[0m'
 red = '\033[0;31m'
 
+#Files to compile or watch
+srcfiles = ['jquery.ui.omnipost.coffee']
+
 log = (message, color, explanation) ->
   console.log color + message + reset + ' ' + (explanation or '')
 
@@ -15,7 +18,9 @@ build = (watch, callback) ->
   if typeof watch is 'function'
     callback = watch
     watch = false
-  options = ['-c', '-b', '-o', '.', '.']
+  options = ['-c', '-b', '-o', '.']
+  for file in srcfiles
+    options.push file
   options.unshift '-w' if watch
 
   coffee = spawn 'coffee', options
